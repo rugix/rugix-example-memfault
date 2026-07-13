@@ -22,7 +22,7 @@ LAST_REBOOT_REASON_FILE=$(cat /etc/memfaultd.conf | jq -r '.reboot.last_reboot_r
 url=$(curl -f -s --get \
     --data-urlencode "hardware_version=${MEMFAULT_HARDWARE_VERSION}" \
     --data-urlencode "software_type=${MEMFAULT_SOFTWARE_TYPE}" \
-    --data-urlencode "software_version=${MEMFAULT_SOFTWARE_VERSION}" \
+    --data-urlencode "current_version=${MEMFAULT_SOFTWARE_VERSION}" \
     --data-urlencode "device_serial=${MEMFAULT_DEVICE_ID}" \
     --header "Memfault-Project-Key: ${PROJECT_KEY}" \
     "https://api.memfault.com/api/v0/releases/latest/url")
