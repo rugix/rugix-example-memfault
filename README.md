@@ -2,6 +2,9 @@
 
 This template showcases how to set up a [Rugix](https://rugix.org) project for use with [Memfault](https://memfault.com/).
 
+> [!NOTE]
+> **Support:** This repository is covered by [Tier 3: Example Integration](https://rugix.org/support-commitment/#tier-example-integration) of the Rugix Support Commitment.
+
 Check out the [corresponding Interrupt article to find out more](https://interrupt.memfault.com/blog/robust-ota-updates-the-easy-way).
 
 ## Usage
@@ -77,4 +80,3 @@ It can also be found at `build/<system>/system.rugixb-hash`.
 Please check the Rugix documentation for [signed updates](<https://rugix.org/docs/ctrl/updates/signed-updates/>)
 to determine the best option for rolling out updates with Rugix's
 mandatory package verification.
-
