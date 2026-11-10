@@ -2,7 +2,11 @@ name: Build
 
 on:
   workflow_dispatch:
+  pull_request:
   push:
+
+env:
+  DOCKER: docker
 
 jobs:
   metadata:
@@ -15,7 +19,7 @@ jobs:
         id: metadata
         run: |
           VERSION=$(date -u +"%Y%m%d%H%M%S")
-          echo "version=${VERSION}" > ${GITHUB_OUTPUT}
+          echo "version=${VERSION}" > "${GITHUB_OUTPUT}"
   build:
     name: Build
     needs: metadata
@@ -35,6 +39,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31
+      - uses: jdx/mise-action@8418fedb1110381a0d3ba51a7a415d7c1b884550 # v5.2.2
+        with:
+          install: false
+      - name: Install Project Tools
+        env:
+          MISE_GITHUB_TOKEN: ${{ github.token }}
+        run: mise install
+
       - name: Configure `binfmt_misc` for Foreign Architectures
         run: docker run --privileged --rm tonistiigi/binfmt --install arm64
       
@@ -48,27 +61,13 @@ jobs:
           echo "MEMFAULT_SOFTWARE_VERSION=${{ needs.metadata.outputs.version }}" >> .env
           echo "MEMFAULT_HARDWARE_VERSION=${{ matrix.job.hardware }}" >> .env
       
-      - name: Bake Image
-        run: ./run-bakery bake image ${{ matrix.job.system }}
-    
-      - name: Bake Bundle
-        run: ./run-bakery bake bundle ${{ matrix.job.system }}
-      
-      - name: Set up Python
-        id: python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.10"
-      
+      - name: Build Image and Bundle
+        run: mise run build ${{ matrix.job.system }}
+
       - name: Upload Bundle
-        run: |
-          pip install memfault-cli==1.4.0
-          memfault \
-            --project ${{ secrets.MEMFAULT_PROJECT_SLUG }} \
-            --org ${{ secrets.MEMFAULT_ORG_SLUG }} \
-            --org-token ${{ secrets.MEMFAULT_ORG_TOKEN }} \
-            upload-ota-payload \
-            --hardware-version ${{ matrix.job.hardware }} \
-            --software-type rugix-debian \
-            --software-version ${{ needs.metadata.outputs.version }} \
-            build/${{ matrix.job.system }}/system.rugixb
+        if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || startsWith(github.ref, 'refs/tags/')
+        env:
+          MEMFAULT_PROJECT_SLUG: ${{ secrets.MEMFAULT_PROJECT_SLUG }}
+          MEMFAULT_ORG_SLUG: ${{ secrets.MEMFAULT_ORG_SLUG }}
+          MEMFAULT_ORG_TOKEN: ${{ secrets.MEMFAULT_ORG_TOKEN }}
+        run: mise run upload ${{ matrix.job.system }}

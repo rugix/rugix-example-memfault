@@ -1,0 +1,31 @@
+[tools]
+uv = "latest"
+python = "3.10"
+
+[env]
+_.file = ".env"
+
+[tasks."run"]
+shell = "nix develop \"{{config_root}}\" --command bash -euo pipefail -c"
+description = "Run a system in a VM."
+usage = 'arg "[system]" default="customized-efi-arm64"'
+run = '''
+./run-bakery run "$usage_system"
+'''
+
+[tasks."build"]
+shell = "nix develop \"{{config_root}}\" --command bash -euo pipefail -c"
+description = "Build an image and bundle; accepts a system followed by bundle options."
+run = "bash scripts/build.sh \"$@\""
+
+[tasks."upload"]
+description = "Upload a bundle to Memfault."
+usage = 'arg "[system]" default="customized-efi-arm64"'
+run = "bash scripts/upload.sh \"$usage_system\""
+
+[tasks."ssh"]
+shell = "nix develop \"{{config_root}}\" --command bash -euo pipefail -c"
+description = "Connect to the VM over SSH."
+run = '''
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@127.0.0.1
+'''

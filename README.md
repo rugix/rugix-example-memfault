@@ -8,7 +8,7 @@ Check out the [corresponding Interrupt article to find out more](https://interru
 
 ### Setup
 
-Install [`just`](https://just.systems/man/en/) to be able to use the `Justfile`.
+Install [mise](https://mise.jdx.dev/) to run the project tasks in `mise.toml`.
 
 Copy the file `env.template` to `.env` and set the following variables:
 
@@ -28,7 +28,7 @@ If you want to be able to upload OTA updates, also set the following variables:
 To run a VM based on the `customized-efi-arm64` system:
 
 ```shell
-just run
+mise run run
 ```
 
 #### Connect to VM via SSH
@@ -36,7 +36,7 @@ just run
 To connect to a running VM via SSH:
 
 ```shell
-just ssh
+mise run ssh
 ```
 
 Note that this requires `DEV_SSH_KEYS` to be set appropriately.
@@ -46,17 +46,17 @@ Note that this requires `DEV_SSH_KEYS` to be set appropriately.
 To build an image and an update bundle for a given system:
 
 ```shell
-just build <system> [--without-compression]
+mise run build -- <system> [--disable-compression]
 ```
 
-Use `--without-compression` to speed up the build.
+Use `--disable-compression` to speed up the build.
 
 #### Upload an OTA Payload
 
 To upload the update bundle as a Memfault OTA payload:
 
 ```shell
-just upload <system>
+mise run upload <system>
 ```
 
 #### Updating via OTA
@@ -78,8 +78,33 @@ Please check the Rugix documentation for [signed updates](<https://rugix.org/doc
 to determine the best option for rolling out updates with Rugix's
 mandatory package verification.
 
+## Development Tasks
+
+Install Nix with flakes enabled and mise, then run `mise install`. Mise
+provides Python 3.10 and uv. The upload task runs the pinned Memfault CLI
+from the locked Python project. Build and VM tasks select Nix for
+Podman and SSH tools on x86-64 and AArch64 Linux.
+
+For example:
+
+~~~sh
+mise run build customized-efi-arm64
+mise run run customized-efi-arm64
+mise run upload customized-efi-arm64
+~~~
+
+Configure `.env` and Memfault credentials as described above before building
+or uploading. CI builds feature branches without uploading OTA payloads;
+uploads run only for the default branch and release tags.
+
+
 ## Support
 
 This repository is covered by
 [Tier 3: Example Integration](https://rugix.org/support-commitment/#tier-example-integration)
 of the Rugix Support Commitment.
+
+## Automation Scripts
+
+`mise run upload [system]` invokes `scripts/upload.sh`. The script loads
+`.env` and uses the same Memfault credentials as the task.
