@@ -23,19 +23,23 @@ jobs:
   build:
     name: Build
     needs: metadata
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.job.runner }}
     strategy:
       fail-fast: false
       matrix:
         job:
           - system: customized-pi5
             hardware: rpi4-arm64
+            runner: ubuntu-24.04-arm
           - system: customized-pi4
             hardware: rpi5-arm64
+            runner: ubuntu-24.04-arm
           - system: customized-efi-arm64
             hardware: efi-arm64
+            runner: ubuntu-24.04-arm
           - system: customized-efi-amd64
             hardware: efi-amd64
+            runner: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -48,9 +52,6 @@ jobs:
           MISE_GITHUB_TOKEN: ${{ github.token }}
         run: mise install
 
-      - name: Configure `binfmt_misc` for Foreign Architectures
-        run: docker run --privileged --rm tonistiigi/binfmt --install arm64
-      
       - name: Prepare and Configure
         shell: bash
         id: configure
