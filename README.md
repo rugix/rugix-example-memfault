@@ -109,8 +109,3 @@ uploads run only for the default branch and release tags.
 This repository is covered by
 [Tier 3: Example Integration](https://rugix.org/support-commitment/#tier-example-integration)
 of the Rugix Support Commitment.
-
-## Automation Scripts
-
-`mise run upload [system]` invokes `scripts/upload.sh`. The script loads
-`.env` and uses the same Memfault credentials as the task.
