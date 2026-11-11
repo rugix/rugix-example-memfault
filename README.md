@@ -8,7 +8,8 @@ Check out the [corresponding Interrupt article to find out more](https://interru
 
 ### Setup
 
-Install [mise](https://mise.jdx.dev/) to run the project tasks in `mise.toml`.
+Install Docker or Podman to build and run images with `./run-bakery`.
+Install [mise](https://mise.jdx.dev/) for the convenience tasks in `mise.toml`.
 
 Copy the file `env.template` to `.env` and set the following variables:
 
@@ -20,6 +21,12 @@ If you want to be able to upload OTA updates, also set the following variables:
 - `MEMFAULT_ORG_SLUG`: Slug of your Memfault organization.
 - `MEMFAULT_ORG_TOKEN`: Access token for your Memfault organization.
 - `MEMFAULT_PROJECT_SLUG`: Project to upload OTA updates to.
+
+For example, after configuring `.env`, build an image directly:
+
+```sh
+./run-bakery bake image customized-efi-arm64
+```
 
 ### Tasks
 
@@ -80,10 +87,9 @@ mandatory package verification.
 
 ## Development Tasks
 
-Install Nix with flakes enabled and mise, then run `mise install`. Mise
-provides Python 3.10 and uv. The upload task runs the pinned Memfault CLI
-from the locked Python project. Build and VM tasks select Nix for
-Podman and SSH tools on x86-64 and AArch64 Linux.
+Mise tasks use the installed Docker or Podman runtime. The SSH task also
+requires an SSH client. Run `mise install` for Python 3.10 and uv; the upload
+task runs the pinned Memfault CLI from the locked Python project.
 
 For example:
 
