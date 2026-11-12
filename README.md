@@ -8,7 +8,8 @@ Check out the [corresponding Interrupt article to find out more](https://interru
 
 ### Setup
 
-Install [`just`](https://just.systems/man/en/) to be able to use the `Justfile`.
+Install Docker or Podman to build and run images with `./run-bakery`.
+For the convenience tasks, install [mise](https://mise.jdx.dev/) and run `mise install`.
 
 Copy the file `env.template` to `.env` and set the following variables:
 
@@ -21,6 +22,12 @@ If you want to be able to upload OTA updates, also set the following variables:
 - `MEMFAULT_ORG_TOKEN`: Access token for your Memfault organization.
 - `MEMFAULT_PROJECT_SLUG`: Project to upload OTA updates to.
 
+For example, after configuring `.env`, build an image directly:
+
+```sh
+./run-bakery bake image customized-efi-arm64
+```
+
 ### Tasks
 
 #### Running a VM
@@ -28,7 +35,7 @@ If you want to be able to upload OTA updates, also set the following variables:
 To run a VM based on the `customized-efi-arm64` system:
 
 ```shell
-just run
+mise run run
 ```
 
 #### Connect to VM via SSH
@@ -36,7 +43,7 @@ just run
 To connect to a running VM via SSH:
 
 ```shell
-just ssh
+mise run ssh
 ```
 
 Note that this requires `DEV_SSH_KEYS` to be set appropriately.
@@ -46,18 +53,21 @@ Note that this requires `DEV_SSH_KEYS` to be set appropriately.
 To build an image and an update bundle for a given system:
 
 ```shell
-just build <system> [--without-compression]
+mise run build -- <system> [--disable-compression]
 ```
 
-Use `--without-compression` to speed up the build.
+Use `--disable-compression` to speed up the build.
 
 #### Upload an OTA Payload
 
 To upload the update bundle as a Memfault OTA payload:
 
 ```shell
-just upload <system>
+mise run upload <system>
 ```
+
+CI builds feature branches without uploading OTA payloads. It uploads only
+from the default branch and release tags.
 
 #### Updating via OTA
 

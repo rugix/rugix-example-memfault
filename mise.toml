@@ -1,0 +1,28 @@
+[tools]
+uv = "latest"
+python = "3.10"
+
+[env]
+_.file = ".env"
+
+[tasks."run"]
+description = "Run a system in a VM."
+usage = 'arg "[system]" default="customized-efi-arm64"'
+run = '''
+./run-bakery run "$usage_system"
+'''
+
+[tasks."build"]
+description = "Build an image and bundle; accepts a system followed by bundle options."
+run = "bash scripts/build.sh \"$@\""
+
+[tasks."upload"]
+description = "Upload a bundle to Memfault."
+usage = 'arg "[system]" default="customized-efi-arm64"'
+run = "bash scripts/upload.sh \"$usage_system\""
+
+[tasks."ssh"]
+description = "Connect to the VM over SSH."
+run = '''
+ssh -p 2222 root@127.0.0.1
+'''
