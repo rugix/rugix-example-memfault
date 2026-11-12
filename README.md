@@ -9,7 +9,7 @@ Check out the [corresponding Interrupt article to find out more](https://interru
 ### Setup
 
 Install Docker or Podman to build and run images with `./run-bakery`.
-Install [mise](https://mise.jdx.dev/) for the convenience tasks in `mise.toml`.
+For the convenience tasks, install [mise](https://mise.jdx.dev/) and run `mise install`.
 
 Copy the file `env.template` to `.env` and set the following variables:
 
@@ -66,6 +66,9 @@ To upload the update bundle as a Memfault OTA payload:
 mise run upload <system>
 ```
 
+CI builds feature branches without uploading OTA payloads. It uploads only
+from the default branch and release tags.
+
 #### Updating via OTA
 
 The template uses Rugix Ctrl >=1.0.
@@ -84,25 +87,6 @@ It can also be found at `build/<system>/system.rugixb-hash`.
 Please check the Rugix documentation for [signed updates](<https://rugix.org/docs/ctrl/updates/signed-updates/>)
 to determine the best option for rolling out updates with Rugix's
 mandatory package verification.
-
-## Development Tasks
-
-Mise tasks use the installed Docker or Podman runtime. The SSH task also
-requires an SSH client. Run `mise install` for Python 3.10 and uv; the upload
-task runs the pinned Memfault CLI from the locked Python project.
-
-For example:
-
-~~~sh
-mise run build customized-efi-arm64
-mise run run customized-efi-arm64
-mise run upload customized-efi-arm64
-~~~
-
-Configure `.env` and Memfault credentials as described above before building
-or uploading. CI builds feature branches without uploading OTA payloads;
-uploads run only for the default branch and release tags.
-
 
 ## Support
 

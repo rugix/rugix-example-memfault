@@ -24,5 +24,5 @@ run = "bash scripts/upload.sh \"$usage_system\""
 [tasks."ssh"]
 description = "Connect to the VM over SSH."
 run = '''
-ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -p 2222 root@127.0.0.1
+ssh -p 2222 root@127.0.0.1
 '''
